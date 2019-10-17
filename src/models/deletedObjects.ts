@@ -1,6 +1,6 @@
 import _ from "lodash";
 import axios from "axios";
-import moment from "moment";
+import moment, { Moment } from "moment";
 
 import { D2 } from "../types/d2";
 import { TableList, TablePagination, TableFilters } from "../types/d2-ui-components";
@@ -13,6 +13,11 @@ type DeletedObjectData = {
     deletedAt: Date;
     deletedBy: string;
 };
+
+interface DeletedObjectsTableFilters extends TableFilters {
+    deletedAtFilter: Moment;
+    metadataTypeFilter: string;
+}
 
 export default class DeletedObject {
     private data: DeletedObjectData;
@@ -51,10 +56,10 @@ export default class DeletedObject {
 
     public static async list(
         d2: D2,
-        filters: TableFilters,
+        filters: DeletedObjectsTableFilters,
         pagination: TablePagination
     ): Promise<TableList> {
-        const { search = null, lastUpdatedDate = null } = filters || {};
+        const { search = null, deletedAtFilter = null, metadataTypeFilter = null } = filters || {};
         const { page = 1, pageSize = 20, paging = true, sorting = ["id", "asc"] } =
             pagination || {};
 
@@ -76,10 +81,11 @@ export default class DeletedObject {
                     : true
             )
             .filter(object =>
-                lastUpdatedDate && object.deletedAt
-                    ? moment(lastUpdatedDate).isSameOrBefore(object.deletedAt)
+                deletedAtFilter && object.deletedAt
+                    ? moment(deletedAtFilter).isSameOrBefore(object.deletedAt)
                     : true
             )
+            .filter(object => (metadataTypeFilter ? object.klass === metadataTypeFilter : true))
             .value();
 
         const [field, direction] = sorting;

@@ -1,10 +1,13 @@
 import React from "react";
+import _ from "lodash";
 import PropTypes from "prop-types";
 import i18n from "@dhis2/d2-i18n";
 import { withLoading } from "d2-ui-components";
+import { DatePicker } from "d2-ui-components";
 
 import GenericSynchronizationPage from "./GenericSynchronizationPage";
 import DeletedObject from "../../models/deletedObjects";
+import Dropdown from "../dropdown/Dropdown";
 
 class DeletedObjectsPage extends React.Component {
     static propTypes = {
@@ -14,7 +17,6 @@ class DeletedObjectsPage extends React.Component {
     state = {
         filters: {
             deletedAtFilter: null,
-            deletedByFilter: null,
             metadataTypeFilter: null,
         },
     };
@@ -48,8 +50,60 @@ class DeletedObjectsPage extends React.Component {
         },
     ];
 
+    changeDateFilter = value => {
+        const { filters } = this.state;
+        this.setState({ filters: { ...filters, deletedAtFilter: value } });
+    };
+
+    changeModelName = event => {
+        const { filters } = this.state;
+        this.setState({
+            filters: {
+                ...filters,
+                metadataTypeFilter: event.target.value,
+            },
+        });
+    };
+
+    renderCustomFilters = () => {
+        const { d2 } = this.props;
+        const { filters } = this.state;
+        const { deletedAtFilter, metadataTypeFilter } = filters;
+
+        const models = _(d2.models)
+            .mapValues(({ javaClass, displayName }) => ({
+                id: javaClass.substr(javaClass.lastIndexOf(".") + 1),
+                name: displayName,
+            }))
+            .values()
+            .uniqBy("id")
+            .sortBy("name")
+            .value();
+
+        return (
+            <React.Fragment>
+                <DatePicker
+                    key={"date-filter"}
+                    placeholder={i18n.t("Deleted date")}
+                    value={deletedAtFilter}
+                    onChange={this.changeDateFilter}
+                    isFilter
+                />
+
+                <Dropdown
+                    key={"model-filter"}
+                    items={models}
+                    onChange={this.changeModelName}
+                    value={metadataTypeFilter}
+                    label={i18n.t("Metadata type")}
+                />
+            </React.Fragment>
+        );
+    };
+
     render() {
         const { d2 } = this.props;
+        const { filters } = this.state;
 
         const title = i18n.t("Deleted Objects Synchronization");
 
@@ -60,6 +114,8 @@ class DeletedObjectsPage extends React.Component {
                 models={this.models}
                 list={DeletedObject.list}
                 isDelete={true}
+                customFiltersComponent={this.renderCustomFilters}
+                customFilters={filters}
             />
         );
     }
