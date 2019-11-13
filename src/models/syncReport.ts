@@ -57,10 +57,10 @@ export default class SyncReport {
         pagination: TablePagination
     ): Promise<TableList> {
         const { statusFilter } = filters;
-        const data = await getPaginatedData(d2, dataStoreKey, filters, pagination);
-        return statusFilter
-            ? { ...data, objects: _.filter(data.objects, e => e.status === statusFilter) }
-            : data;
+        const filteringMethod = (data: any[]) =>
+            statusFilter ? _.filter(data, e => e.status === statusFilter) : data;
+
+        return getPaginatedData(d2, dataStoreKey, filters, pagination, filteringMethod);
     }
 
     public async save(d2: D2): Promise<void> {

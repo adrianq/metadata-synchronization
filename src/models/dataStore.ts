@@ -72,7 +72,8 @@ export async function getPaginatedData(
     d2: D2,
     dataStoreKey: string,
     filters: TableFilters,
-    pagination: TablePagination
+    pagination: TablePagination,
+    externalFilters: Function = (objects: any[]) => objects
 ): Promise<TableList> {
     const { search = null } = filters || {};
     const { page = 1, pageSize = 20, paging = true, sorting = ["id", "asc"] } = pagination || {};
@@ -80,13 +81,13 @@ export async function getPaginatedData(
     const rawData = await getDataStore(d2, dataStoreKey, []);
 
     const filteredData = search
-        ? _.filter(rawData, o =>
+        ? _.filter(externalFilters(rawData), o =>
               _(o)
                   .keys()
                   .filter(k => typeof o[k] === "string")
                   .some(k => o[k].toLowerCase().includes(search.toLowerCase()))
           )
-        : rawData;
+        : externalFilters(rawData);
 
     const [field, direction] = sorting;
     const sortedData = _.orderBy(

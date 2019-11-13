@@ -101,21 +101,25 @@ export default class SyncRule {
     ): Promise<TableList> {
         const { targetInstanceFilter = null, enabledFilter = null, lastExecutedFilter = null } =
             filters || {};
-        const data = await getPaginatedData(d2, dataStoreKey, filters, pagination);
-        const objects = _(data.objects)
-            .filter(rule =>
-                targetInstanceFilter
-                    ? rule.builder.targetInstances.includes(targetInstanceFilter)
-                    : true
-            )
-            .filter(rule => (enabledFilter ? rule.enabled && enabledFilter === "enabled" : true))
-            .filter(rule =>
-                lastExecutedFilter && rule.lastExecuted
-                    ? moment(lastExecutedFilter).isSameOrBefore(rule.lastExecuted)
-                    : true
-            )
-            .value();
-        return { ...data, objects };
+
+        const filteringMethod = (data: any[]) =>
+            _(data)
+                .filter(rule =>
+                    targetInstanceFilter
+                        ? rule.builder.targetInstances.includes(targetInstanceFilter)
+                        : true
+                )
+                .filter(rule =>
+                    enabledFilter ? rule.enabled && enabledFilter === "enabled" : true
+                )
+                .filter(rule =>
+                    lastExecutedFilter && rule.lastExecuted
+                        ? moment(lastExecutedFilter).isSameOrBefore(rule.lastExecuted)
+                        : true
+                )
+                .value();
+
+        return getPaginatedData(d2, dataStoreKey, filters, pagination, filteringMethod);
     }
 
     public updateName(name: string): SyncRule {
