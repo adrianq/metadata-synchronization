@@ -101,25 +101,30 @@ export default class SyncRule {
     ): Promise<TableList> {
         const { targetInstanceFilter = null, enabledFilter = null, lastExecutedFilter = null } =
             filters || {};
+        const { page = 1, pageSize = 20, paging = true } = pagination || {};
 
-        const filteringMethod = (data: any[]) =>
-            _(data)
-                .filter(rule =>
-                    targetInstanceFilter
-                        ? rule.builder.targetInstances.includes(targetInstanceFilter)
-                        : true
-                )
-                .filter(rule =>
-                    enabledFilter ? rule.enabled && enabledFilter === "enabled" : true
-                )
-                .filter(rule =>
-                    lastExecutedFilter && rule.lastExecuted
-                        ? moment(lastExecutedFilter).isSameOrBefore(rule.lastExecuted)
-                        : true
-                )
-                .value();
+        const data = await getPaginatedData(d2, dataStoreKey, filters, pagination);
+        const filteredObjects = _(data.objects)
+            .filter(rule =>
+                targetInstanceFilter
+                    ? rule.builder.targetInstances.includes(targetInstanceFilter)
+                    : true
+            )
+            .filter(rule => (enabledFilter ? rule.enabled && enabledFilter === "enabled" : true))
+            .filter(rule =>
+                lastExecutedFilter && rule.lastExecuted
+                    ? moment(lastExecutedFilter).isSameOrBefore(rule.lastExecuted)
+                    : true
+            )
+            .value();
 
-        return getPaginatedData(d2, dataStoreKey, filters, pagination, filteringMethod);
+        const total = filteredObjects.length;
+        const pageCount = paging ? Math.ceil(filteredObjects.length / pageSize) : 1;
+        const firstItem = paging ? (page - 1) * pageSize : 0;
+        const lastItem = paging ? firstItem + pageSize : total;
+        const objects = _.slice(filteredObjects, firstItem, lastItem);
+
+        return { objects, pager: { page, pageCount, total } };
     }
 
     public updateName(name: string): SyncRule {
