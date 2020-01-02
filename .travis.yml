@@ -6,7 +6,7 @@ before_install:
   - echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
   - git clone https://github.com/EyeSeeTea/d2-docker.git
   - cd d2-docker/
-  - sudo python3 setup.py install
+  - sudo python setup.py install
   - sudo d2-docker --help
   - sudo docker login
   - sudo d2-docker start eyeseetea/dhis2-data:2.30-datasync-sender
