@@ -6,7 +6,7 @@ cache:
     - "$HOME/.cache"
 before_install:
   - echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
-  - git clone git@github.com:EyeSeeTea/d2-docker.git
+  - git clone https://github.com/EyeSeeTea/d2-docker.git
   - cd d2-docker/
   - sudo python3 setup.py install
   - sudo d2-docker --help
