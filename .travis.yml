@@ -27,6 +27,7 @@ before_install:
   - sudo systemctl unmask docker.service
   - sudo systemctl unmask docker.socket
   - sudo systemctl start docker.service
+  - sudo d2-docker pull eyeseetea/dhis2-data:2.30-datasync-sender
   - sudo d2-docker start eyeseetea/dhis2-data:2.30-datasync-sender
 install:
   - yarn install --frozen-lockfile
