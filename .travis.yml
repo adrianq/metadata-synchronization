@@ -17,7 +17,7 @@ before_install:
   - sudo mv docker-compose /usr/local/bin
   - git clone https://github.com/EyeSeeTea/d2-docker.git
   - cd d2-docker/
-  - git checkout test
+  - git checkout origin/test
   - sudo python3 setup.py install
   - sudo d2-docker --help
   - sudo docker login
