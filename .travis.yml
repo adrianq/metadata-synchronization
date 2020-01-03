@@ -1,9 +1,13 @@
-language: python
+language: node_js
+node_js:
+  - 12.13.0
 cache:
   directories:
     - "$HOME/.cache"
 before_install:
   - echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+  - sudo apt-get update
+  - sudo apt-get install python3
   - git clone https://github.com/EyeSeeTea/d2-docker.git
   - cd d2-docker/
   - sudo python setup.py install
