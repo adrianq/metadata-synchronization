@@ -1,6 +1,7 @@
 language: node_js
 node_js:
   - 12.13.0
+dist: bionic
 env:
   - DOCKER_COMPOSE_VERSION=1.18
 cache:
@@ -9,12 +10,13 @@ cache:
 before_install:
   - echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
   - sudo apt-get update
-  - sudo apt-get install python3
+  - sudo apt-get install python3 python
   - sudo apt-get install python3-setuptools
-  - sudo rm /usr/local/bin/docker-compose
-  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
-  - chmod +x docker-compose
-  - sudo mv docker-compose /usr/local/bin
+  - sudo apt-get install docker.io docker-compose
+  # - sudo rm /usr/local/bin/docker-compose
+  # - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  # - chmod +x docker-compose
+  # - sudo mv docker-compose /usr/local/bin
   - git clone https://github.com/EyeSeeTea/d2-docker.git
   - cd d2-docker/
   - git checkout origin/test
@@ -35,8 +37,8 @@ addons:
   apt:
     packages:
     - libgconf-2-4
-services:
-  - docker
-python:
-  - "3.6"
+# services:
+#   - docker
+# python:
+#   - "3.6"
 
