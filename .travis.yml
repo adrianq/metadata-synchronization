@@ -19,15 +19,14 @@ before_install:
   - cd d2-docker/
   - git checkout origin/test
   - sudo python3 setup.py install
-  - sudo d2-docker --help
+  - d2-docker --help
   - sudo apt-get remove golang-docker-credential-helpers
-  - echo "$DOCKER_PASSWORD" | sudo docker login -u "$DOCKER_USERNAME" --password-stdin
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
   - sudo systemctl unmask docker.service
   - sudo systemctl unmask docker.socket
   - sudo systemctl start docker.service
-  - groups
-  - sudo docker pull eyeseetea/dhis2-data:2.30-datasync-sender
-  - sudo d2-docker start eyeseetea/dhis2-data:2.30-datasync-sender
+  - docker pull eyeseetea/dhis2-data:2.30-datasync-sender
+  - d2-docker start eyeseetea/dhis2-data:2.30-datasync-sender
 install:
   - yarn install --frozen-lockfile
   - yarn cy:verify
