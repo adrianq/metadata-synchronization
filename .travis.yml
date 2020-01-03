@@ -8,6 +8,7 @@ before_install:
   - echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
   - sudo apt-get update
   - sudo apt-get install python3
+  - sudo apt-get install python3-setuptools
   - git clone https://github.com/EyeSeeTea/d2-docker.git
   - cd d2-docker/
   - sudo python3 setup.py install
