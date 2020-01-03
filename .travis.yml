@@ -24,6 +24,7 @@ before_install:
   - sudo d2-docker --help
   - sudo apt-get remove golang-docker-credential-helpers
   - sudo echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - sudo service docker start
   - sudo d2-docker start eyeseetea/dhis2-data:2.30-datasync-sender
 install:
   - yarn install --frozen-lockfile
